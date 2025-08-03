@@ -8,16 +8,19 @@ export class Company {
     @Column()
     name: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: false })
     phone: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: false })
+    alias: string;
+
+    @Column({ nullable: false })
     address: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: false })
     rnc: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: false })
     owner: string;
 
     @Column({ name: 'isactive', default: true })

@@ -15,6 +15,7 @@ let Company = class Company {
     id;
     name;
     phone;
+    alias;
     address;
     rnc;
     owner;
@@ -32,19 +33,23 @@ __decorate([
     __metadata("design:type", String)
 ], Company.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: false }),
     __metadata("design:type", String)
 ], Company.prototype, "phone", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: false }),
+    __metadata("design:type", String)
+], Company.prototype, "alias", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: false }),
     __metadata("design:type", String)
 ], Company.prototype, "address", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: false }),
     __metadata("design:type", String)
 ], Company.prototype, "rnc", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: false }),
     __metadata("design:type", String)
 ], Company.prototype, "owner", void 0);
 __decorate([

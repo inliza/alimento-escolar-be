@@ -2,6 +2,7 @@ export declare class Company {
     id: number;
     name: string;
     phone: string;
+    alias: string;
     address: string;
     rnc: string;
     owner: string;

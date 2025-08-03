@@ -15,13 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
+const user_create_dto_1 = require("../../dtos/user-create.dto");
+const login_dto_1 = require("../../dtos/login.dto");
+const auth_middleware_1 = require("../../common/middleware/auth.middleware");
 let UsersController = class UsersController {
     service;
     constructor(service) {
         this.service = service;
     }
-    async create(body) {
-        return await this.service.create(body);
+    async create(body, response) {
+        const res = await this.service.create(body);
+        return response.status(res.code).send(res);
+    }
+    async login(body, response) {
+        const res = await this.service.login(body);
+        return response.status(res.code).send(res);
+    }
+    async getLogged(request, response) {
+        const res = await this.service.getLoggedUser(request.claims.sub);
+        return response.status(res.code).send(res);
     }
     async findAll() {
         return await this.service.findAll();
@@ -40,10 +52,28 @@ exports.UsersController = UsersController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [user_create_dto_1.CreateUserDto, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('login'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "login", null);
+__decorate([
+    (0, common_1.Get)('logged'),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getLogged", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
