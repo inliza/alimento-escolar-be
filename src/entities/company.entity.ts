@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Escuela } from './escuela.entity';
 
 @Entity('company')
 export class Company {
@@ -31,4 +32,8 @@ export class Company {
 
     @Column({ name: 'create_dt', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createDt: Date;
+
+
+    @OneToMany(() => Escuela, escuela => escuela.company)
+    escuelas: Escuela[];
 }

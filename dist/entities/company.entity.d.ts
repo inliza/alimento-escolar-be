@@ -1,3 +1,4 @@
+import { Escuela } from './escuela.entity';
 export declare class Company {
     id: number;
     name: string;
@@ -9,4 +10,5 @@ export declare class Company {
     isActive: boolean;
     isDeleted: boolean;
     createDt: Date;
+    escuelas: Escuela[];
 }

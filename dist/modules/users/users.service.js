@@ -93,7 +93,11 @@ let UsersService = class UsersService {
         }
     }
     async getLoggedUser(userId) {
-        const user = await this.userRepo.findOne({ where: { id: userId } });
+        const user = await this.userRepo.findOne({
+            where: { id: userId },
+            relations: ['company', 'profile'],
+            select: ['id', 'username', 'firstName', 'lastName', 'company', 'profile']
+        });
         return new service_response_1.ServiceResponse(common_1.HttpStatus.OK, user);
     }
     async findAll() {

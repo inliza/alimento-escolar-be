@@ -95,7 +95,10 @@ export class UsersService {
     }
   }
   async getLoggedUser(userId: number): Promise<ServiceResponse> {
-    const user = await this.userRepo.findOne({ where: { id:userId } });
+    const user = await this.userRepo.findOne({ 
+      where: { id:userId },  
+      relations: ['company', 'profile'],  
+      select: ['id', 'username', 'firstName', 'lastName', 'company', 'profile'] });
     // const options = this._rolesService.getOptionsByRoleId(roleId);
     return new ServiceResponse(HttpStatus.OK, user);
   }
