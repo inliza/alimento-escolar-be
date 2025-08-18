@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Provincia } from './provincia.entity';
 import { Escuela } from './escuela.entity';
 
-@Entity('Distritos')
+@Entity('distritos')
 export class Distrito {
   @PrimaryGeneratedColumn()
   id: number;
@@ -13,7 +13,11 @@ export class Distrito {
   @Column({ length: 4 })
   numero: string;
 
-  @ManyToOne(() => Provincia, provincia => provincia.distritos)
+  @Column({ type: 'int', name: 'idprovincia' })
+  idprovincia: number;
+
+  @ManyToOne(() => Provincia, provincia => provincia.localidades)
+  @JoinColumn({ name: 'idprovincia' })
   provincia: Provincia;
 
   @OneToMany(() => Escuela, escuela => escuela.distrito)

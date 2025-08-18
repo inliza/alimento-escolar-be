@@ -13,25 +13,16 @@ const users_service_1 = require("./users.service");
 const users_controller_1 = require("./users.controller");
 const user_entity_1 = require("../../entities/user.entity");
 const passport_1 = require("@nestjs/passport");
-const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
 const company_module_1 = require("../company/company.module");
 const profiles_module_1 = require("../profiles/profiles.module");
+const common_module_1 = require("../../common/common.module");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.Users]), passport_1.PassportModule, config_1.ConfigModule, company_module_1.CompanyModule, profiles_module_1.ProfilesModule,
-            jwt_1.JwtModule.registerAsync({
-                imports: [config_1.ConfigModule],
-                inject: [config_1.ConfigService],
-                useFactory: (config) => ({
-                    secret: config.get('JWT_SECRET'),
-                    signOptions: { expiresIn: '1h' },
-                }),
-            }),
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.Users]), passport_1.PassportModule, config_1.ConfigModule, company_module_1.CompanyModule, profiles_module_1.ProfilesModule, common_module_1.CommonModule],
         providers: [users_service_1.UsersService],
         controllers: [users_controller_1.UsersController],
         exports: [users_service_1.UsersService],

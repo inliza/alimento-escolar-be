@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Localidad } from './localidad.entity';
 import { Distrito } from './distrito.entity';
 import { Company } from './company.entity';
 
-@Entity('Escuelas')
+@Entity('escuelas')
 export class Escuela {
   @PrimaryGeneratedColumn()
   id: number;
@@ -20,13 +20,13 @@ export class Escuela {
   @Column({ length: 50 })
   director: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50, name: 'codigoescuela' })
   codigoEscuela: string;
 
   @Column('int')
   racion: number;
 
-  @Column({ type: 'char', length: 1, nullable: true })
+  @Column({ type: 'char', length: 1, nullable: true, default: 'P', name: 'tipoescuela' })
   tipoEscuela?: string;
 
   @Column({ type: 'boolean', nullable: true })
@@ -35,15 +35,27 @@ export class Escuela {
   @Column({ type: 'boolean', nullable: true })
   prepara?: boolean;
 
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 50, nullable: true, name: 'prepara_day' })
   prepara_Day?: string;
 
+  @Column({ type: 'int', name: 'idlocalidad' })
+  idLocalidad: number;
+
+  @Column({ type: 'int', name: 'iddistrito' })
+  idDistrito: number;
+
+  @Column({ type: 'int', nullable: true, name: 'idcompany' })
+  idCompany: number;
+
   @ManyToOne(() => Localidad, localidad => localidad.escuelas)
+  @JoinColumn({ name: 'idlocalidad' })
   localidad: Localidad;
 
   @ManyToOne(() => Distrito, distrito => distrito.escuelas)
+  @JoinColumn({ name: 'iddistrito' })
   distrito: Distrito;
 
   @ManyToOne(() => Company, company => company.escuelas, { nullable: true })
+  @JoinColumn({ name: 'idcompany' })
   company?: Company;
 }

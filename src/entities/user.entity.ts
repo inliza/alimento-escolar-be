@@ -12,6 +12,9 @@ export class Users {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'int', name: 'idcompany' })
+  idCompany: number;
+
   @ManyToOne(() => Company, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idcompany' })
   company: Company;
@@ -27,6 +30,9 @@ export class Users {
 
   @Column()
   password: string;
+
+  @Column({ type: 'int', name: 'idprofile' })
+  idProfile: number;
 
   @ManyToOne(() => Profiles, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'idprofile' })

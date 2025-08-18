@@ -4,9 +4,12 @@ import { UpdateEscuelaDto } from 'src/dtos/escuela-update.dto';
 export declare class EscuelasController {
     private readonly escuelasService;
     constructor(escuelasService: EscuelasService);
-    create(createEscuelaDto: CreateEscuelaDto): Promise<import("../../entities/escuela.entity").Escuela>;
-    findAll(): Promise<import("../../entities/escuela.entity").Escuela[]>;
-    findOne(id: number): Promise<import("../../entities/escuela.entity").Escuela>;
-    update(id: number, updateEscuelaDto: UpdateEscuelaDto): Promise<import("../../entities/escuela.entity").Escuela>;
-    remove(id: number): Promise<void>;
+    create(request: any, createEscuelaDto: CreateEscuelaDto): Promise<import("../../helpers/service-response").ServiceResponse<any>>;
+    findAll(request: any, response: any): Promise<any>;
+    findProvinces(response: any): Promise<any>;
+    findDistritos(id: number, response: any): Promise<any>;
+    findLocalidades(id: number, response: any): Promise<any>;
+    findOne(id: number, response: any): Promise<any>;
+    remove(id: number, response: any, request: any): Promise<any>;
+    update(id: number, request: any, response: any, updateEscuelaDto: UpdateEscuelaDto): Promise<any>;
 }

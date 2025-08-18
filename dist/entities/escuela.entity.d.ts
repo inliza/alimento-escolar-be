@@ -13,6 +13,9 @@ export declare class Escuela {
     deleted?: boolean;
     prepara?: boolean;
     prepara_Day?: string;
+    idLocalidad: number;
+    idDistrito: number;
+    idCompany: number;
     localidad: Localidad;
     distrito: Distrito;
     company?: Company;

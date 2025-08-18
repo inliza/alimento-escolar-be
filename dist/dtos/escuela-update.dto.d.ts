@@ -1,5 +1,12 @@
-import { CreateEscuelaDto } from "./escuela-create.dto";
-declare const UpdateEscuelaDto_base: import("@nestjs/mapped-types").MappedType<Partial<CreateEscuelaDto>>;
-export declare class UpdateEscuelaDto extends UpdateEscuelaDto_base {
+export declare class UpdateEscuelaDto {
+    nombre: string;
+    direccion: string;
+    telefono?: string;
+    director: string;
+    codigoEscuela: string;
+    racion: number;
+    idLocalidad: number;
+    idDistrito: number;
+    prepara?: boolean;
+    prepara_Day?: string;
 }
-export {};

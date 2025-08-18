@@ -17,6 +17,7 @@ let Distrito = class Distrito {
     id;
     nombre;
     numero;
+    idprovincia;
     provincia;
     escuelas;
 };
@@ -34,7 +35,12 @@ __decorate([
     __metadata("design:type", String)
 ], Distrito.prototype, "numero", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => provincia_entity_1.Provincia, provincia => provincia.distritos),
+    (0, typeorm_1.Column)({ type: 'int', name: 'idprovincia' }),
+    __metadata("design:type", Number)
+], Distrito.prototype, "idprovincia", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => provincia_entity_1.Provincia, provincia => provincia.localidades),
+    (0, typeorm_1.JoinColumn)({ name: 'idprovincia' }),
     __metadata("design:type", provincia_entity_1.Provincia)
 ], Distrito.prototype, "provincia", void 0);
 __decorate([
@@ -42,6 +48,6 @@ __decorate([
     __metadata("design:type", Array)
 ], Distrito.prototype, "escuelas", void 0);
 exports.Distrito = Distrito = __decorate([
-    (0, typeorm_1.Entity)('Distritos')
+    (0, typeorm_1.Entity)('distritos')
 ], Distrito);
 //# sourceMappingURL=distrito.entity.js.map

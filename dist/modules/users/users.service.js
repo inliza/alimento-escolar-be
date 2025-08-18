@@ -82,7 +82,7 @@ let UsersService = class UsersService {
                 console.log('Invalid credentials for user:', data.username);
                 return new service_response_1.ServiceResponse(common_1.HttpStatus.UNAUTHORIZED, null, 'Usuario o contraseña incorrectos');
             }
-            const payload = { username: exists.username, sub: exists.id };
+            const payload = { username: exists.username, sub: exists.id, company: exists.idCompany, profile: exists.idProfile };
             const token = await this.jwtService.sign(payload);
             return new service_response_1.ServiceResponse(common_1.HttpStatus.CREATED, {
                 access_token: token

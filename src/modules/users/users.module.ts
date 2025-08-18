@@ -10,18 +10,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CompanyModule } from '../company/company.module';
 import { ProfilesModule } from '../profiles/profiles.module';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users]), PassportModule, ConfigModule, CompanyModule, ProfilesModule,
-  JwtModule.registerAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (config: ConfigService) => ({
-      secret: config.get('JWT_SECRET'),
-      signOptions: { expiresIn: '1h' },
-    }),
-  }),
-  ],
+  imports: [TypeOrmModule.forFeature([Users]), PassportModule, ConfigModule, CompanyModule, ProfilesModule, CommonModule],
   providers: [UsersService],
   controllers: [UsersController],
   exports: [UsersService],

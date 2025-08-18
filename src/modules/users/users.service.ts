@@ -84,7 +84,7 @@ export class UsersService {
         return new ServiceResponse(HttpStatus.UNAUTHORIZED, null, 'Usuario o contraseña incorrectos');
       }
 
-      const payload = { username: exists.username, sub: exists.id };
+      const payload = { username: exists.username, sub: exists.id, company: exists.idCompany, profile: exists.idProfile };
       const token = await this.jwtService.sign(payload);
       return new ServiceResponse(HttpStatus.CREATED, {
         access_token: token
@@ -95,10 +95,11 @@ export class UsersService {
     }
   }
   async getLoggedUser(userId: number): Promise<ServiceResponse> {
-    const user = await this.userRepo.findOne({ 
-      where: { id:userId },  
-      relations: ['company', 'profile'],  
-      select: ['id', 'username', 'firstName', 'lastName', 'company', 'profile'] });
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: ['company', 'profile'],
+      select: ['id', 'username', 'firstName', 'lastName', 'company', 'profile']
+    });
     // const options = this._rolesService.getOptionsByRoleId(roleId);
     return new ServiceResponse(HttpStatus.OK, user);
   }

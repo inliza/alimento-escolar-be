@@ -16,6 +16,7 @@ const escuela_entity_1 = require("./escuela.entity");
 let Localidad = class Localidad {
     id;
     nombre;
+    idprovincia;
     provincia;
     escuelas;
 };
@@ -29,7 +30,12 @@ __decorate([
     __metadata("design:type", String)
 ], Localidad.prototype, "nombre", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'int', name: 'idprovincia' }),
+    __metadata("design:type", Number)
+], Localidad.prototype, "idprovincia", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => provincia_entity_1.Provincia, provincia => provincia.localidades),
+    (0, typeorm_1.JoinColumn)({ name: 'idprovincia' }),
     __metadata("design:type", provincia_entity_1.Provincia)
 ], Localidad.prototype, "provincia", void 0);
 __decorate([
@@ -37,6 +43,6 @@ __decorate([
     __metadata("design:type", Array)
 ], Localidad.prototype, "escuelas", void 0);
 exports.Localidad = Localidad = __decorate([
-    (0, typeorm_1.Entity)('Localidades')
+    (0, typeorm_1.Entity)('localidades')
 ], Localidad);
 //# sourceMappingURL=localidad.entity.js.map

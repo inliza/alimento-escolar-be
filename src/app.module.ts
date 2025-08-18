@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CompanyModule } from './modules/company/company.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
 import { UsersModule } from './modules/users/users.module';
+import { EscuelasModule } from './modules/escuelas/escuela.module';
 
 @Module({
   imports: [CommonModule,
@@ -15,7 +16,9 @@ import { UsersModule } from './modules/users/users.module';
     }),
     CompanyModule,
     ProfilesModule,
-    UsersModule,],
+    UsersModule,
+    EscuelasModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

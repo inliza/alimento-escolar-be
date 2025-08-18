@@ -37,6 +37,6 @@ __decorate([
     __metadata("design:type", Array)
 ], Provincia.prototype, "localidades", void 0);
 exports.Provincia = Provincia = __decorate([
-    (0, typeorm_1.Entity)('Provincias')
+    (0, typeorm_1.Entity)('provincias')
 ], Provincia);
 //# sourceMappingURL=provincia.entity.js.map

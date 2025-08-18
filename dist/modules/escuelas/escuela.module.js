@@ -12,12 +12,16 @@ const typeorm_1 = require("@nestjs/typeorm");
 const escuela_entity_1 = require("../../entities/escuela.entity");
 const escuela_controller_1 = require("./escuela.controller");
 const escuela_service_1 = require("./escuela.service");
+const common_module_1 = require("../../common/common.module");
+const localidad_entity_1 = require("../../entities/localidad.entity");
+const provincia_entity_1 = require("../../entities/provincia.entity");
+const distrito_entity_1 = require("../../entities/distrito.entity");
 let EscuelasModule = class EscuelasModule {
 };
 exports.EscuelasModule = EscuelasModule;
 exports.EscuelasModule = EscuelasModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([escuela_entity_1.Escuela])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([escuela_entity_1.Escuela, localidad_entity_1.Localidad, provincia_entity_1.Provincia, distrito_entity_1.Distrito]), common_module_1.CommonModule],
         controllers: [escuela_controller_1.EscuelasController],
         providers: [escuela_service_1.EscuelasService],
     })

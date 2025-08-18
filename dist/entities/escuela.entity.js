@@ -26,6 +26,9 @@ let Escuela = class Escuela {
     deleted;
     prepara;
     prepara_Day;
+    idLocalidad;
+    idDistrito;
+    idCompany;
     localidad;
     distrito;
     company;
@@ -52,7 +55,7 @@ __decorate([
     __metadata("design:type", String)
 ], Escuela.prototype, "director", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 50 }),
+    (0, typeorm_1.Column)({ length: 50, name: 'codigoescuela' }),
     __metadata("design:type", String)
 ], Escuela.prototype, "codigoEscuela", void 0);
 __decorate([
@@ -60,7 +63,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Escuela.prototype, "racion", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'char', length: 1, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'char', length: 1, nullable: true, default: 'P', name: 'tipoescuela' }),
     __metadata("design:type", String)
 ], Escuela.prototype, "tipoEscuela", void 0);
 __decorate([
@@ -72,22 +75,37 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Escuela.prototype, "prepara", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 50, nullable: true }),
+    (0, typeorm_1.Column)({ length: 50, nullable: true, name: 'prepara_day' }),
     __metadata("design:type", String)
 ], Escuela.prototype, "prepara_Day", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'int', name: 'idlocalidad' }),
+    __metadata("design:type", Number)
+], Escuela.prototype, "idLocalidad", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'int', name: 'iddistrito' }),
+    __metadata("design:type", Number)
+], Escuela.prototype, "idDistrito", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'int', nullable: true, name: 'idcompany' }),
+    __metadata("design:type", Number)
+], Escuela.prototype, "idCompany", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => localidad_entity_1.Localidad, localidad => localidad.escuelas),
+    (0, typeorm_1.JoinColumn)({ name: 'idlocalidad' }),
     __metadata("design:type", localidad_entity_1.Localidad)
 ], Escuela.prototype, "localidad", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => distrito_entity_1.Distrito, distrito => distrito.escuelas),
+    (0, typeorm_1.JoinColumn)({ name: 'iddistrito' }),
     __metadata("design:type", distrito_entity_1.Distrito)
 ], Escuela.prototype, "distrito", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => company_entity_1.Company, company => company.escuelas, { nullable: true }),
+    (0, typeorm_1.JoinColumn)({ name: 'idcompany' }),
     __metadata("design:type", company_entity_1.Company)
 ], Escuela.prototype, "company", void 0);
 exports.Escuela = Escuela = __decorate([
-    (0, typeorm_1.Entity)('Escuelas')
+    (0, typeorm_1.Entity)('escuelas')
 ], Escuela);
 //# sourceMappingURL=escuela.entity.js.map

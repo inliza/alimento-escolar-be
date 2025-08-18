@@ -15,11 +15,13 @@ const company_entity_1 = require("./company.entity");
 const profile_entity_1 = require("./profile.entity");
 let Users = class Users {
     id;
+    idCompany;
     company;
     firstName;
     lastName;
     username;
     password;
+    idProfile;
     profile;
     isActive;
     isDeleted;
@@ -31,6 +33,10 @@ __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], Users.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'int', name: 'idcompany' }),
+    __metadata("design:type", Number)
+], Users.prototype, "idCompany", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => company_entity_1.Company, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'idcompany' }),
@@ -52,6 +58,10 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Users.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'int', name: 'idprofile' }),
+    __metadata("design:type", Number)
+], Users.prototype, "idProfile", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => profile_entity_1.Profiles, { nullable: true, onDelete: 'SET NULL' }),
     (0, typeorm_1.JoinColumn)({ name: 'idprofile' }),
