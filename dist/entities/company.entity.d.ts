@@ -1,4 +1,5 @@
 import { Escuela } from './escuela.entity';
+import { MenuDesayuno } from './menu-desayuno.entity';
 export declare class Company {
     id: number;
     name: string;
@@ -11,4 +12,5 @@ export declare class Company {
     isDeleted: boolean;
     createDt: Date;
     escuelas: Escuela[];
+    breakfastMenus?: MenuDesayuno[];
 }

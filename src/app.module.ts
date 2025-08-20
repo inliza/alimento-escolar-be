@@ -7,6 +7,8 @@ import { CompanyModule } from './modules/company/company.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
 import { UsersModule } from './modules/users/users.module';
 import { EscuelasModule } from './modules/escuelas/escuela.module';
+import { ArticulosModule } from './modules/articulos/articulos.module';
+import { MenuModule } from './modules/menu/menu.module';
 
 @Module({
   imports: [CommonModule,
@@ -17,7 +19,9 @@ import { EscuelasModule } from './modules/escuelas/escuela.module';
     CompanyModule,
     ProfilesModule,
     UsersModule,
-    EscuelasModule
+    EscuelasModule,
+    ArticulosModule,
+    MenuModule
   ],
   controllers: [AppController],
   providers: [AppService],
