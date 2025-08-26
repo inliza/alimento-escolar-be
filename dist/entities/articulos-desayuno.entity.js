@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ArticuloDesayuno = void 0;
 const typeorm_1 = require("typeorm");
 const menu_desayuno_entity_1 = require("./menu-desayuno.entity");
+const conduces_desayuno_entity_1 = require("./conduces-desayuno.entity");
 let ArticuloDesayuno = class ArticuloDesayuno {
     id;
     nombre;
@@ -19,6 +20,7 @@ let ArticuloDesayuno = class ArticuloDesayuno {
     itbis;
     isDeleted;
     menus;
+    conduces;
 };
 exports.ArticuloDesayuno = ArticuloDesayuno;
 __decorate([
@@ -46,6 +48,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => menu_desayuno_entity_1.MenuDesayuno, (menu) => menu.articulo, { cascade: false }),
     __metadata("design:type", Array)
 ], ArticuloDesayuno.prototype, "menus", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => conduces_desayuno_entity_1.ConduceDesayuno, (conduce) => conduce.articulo),
+    __metadata("design:type", Array)
+], ArticuloDesayuno.prototype, "conduces", void 0);
 exports.ArticuloDesayuno = ArticuloDesayuno = __decorate([
     (0, typeorm_1.Entity)({ name: 'articulos_desayuno' })
 ], ArticuloDesayuno);

@@ -1,5 +1,6 @@
 import { Escuela } from './escuela.entity';
 import { MenuDesayuno } from './menu-desayuno.entity';
+import { ConduceDesayuno } from 'src/entities/conduces-desayuno.entity';
 export declare class Company {
     id: number;
     name: string;
@@ -13,4 +14,5 @@ export declare class Company {
     createDt: Date;
     escuelas: Escuela[];
     breakfastMenus?: MenuDesayuno[];
+    conduces: ConduceDesayuno[];
 }

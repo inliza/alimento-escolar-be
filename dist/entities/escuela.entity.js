@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const localidad_entity_1 = require("./localidad.entity");
 const distrito_entity_1 = require("./distrito.entity");
 const company_entity_1 = require("./company.entity");
+const conduces_desayuno_entity_1 = require("./conduces-desayuno.entity");
 let Escuela = class Escuela {
     id;
     nombre;
@@ -32,6 +33,7 @@ let Escuela = class Escuela {
     localidad;
     distrito;
     company;
+    conduces;
 };
 exports.Escuela = Escuela;
 __decorate([
@@ -105,6 +107,10 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: 'idcompany' }),
     __metadata("design:type", company_entity_1.Company)
 ], Escuela.prototype, "company", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => conduces_desayuno_entity_1.ConduceDesayuno, (conduce) => conduce.escuela),
+    __metadata("design:type", Array)
+], Escuela.prototype, "conduces", void 0);
 exports.Escuela = Escuela = __decorate([
     (0, typeorm_1.Entity)('escuelas')
 ], Escuela);

@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Localidad } from './localidad.entity';
 import { Distrito } from './distrito.entity';
 import { Company } from './company.entity';
+import { ConduceDesayuno } from 'src/entities/conduces-desayuno.entity';
 
 @Entity('escuelas')
 export class Escuela {
@@ -58,4 +59,8 @@ export class Escuela {
   @ManyToOne(() => Company, company => company.escuelas, { nullable: true })
   @JoinColumn({ name: 'idcompany' })
   company?: Company;
+
+  @OneToMany(() => ConduceDesayuno, (conduce) => conduce.escuela)
+  conduces: ConduceDesayuno[];
+
 }

@@ -13,6 +13,7 @@ exports.Company = void 0;
 const typeorm_1 = require("typeorm");
 const escuela_entity_1 = require("./escuela.entity");
 const menu_desayuno_entity_1 = require("./menu-desayuno.entity");
+const conduces_desayuno_entity_1 = require("./conduces-desayuno.entity");
 let Company = class Company {
     id;
     name;
@@ -26,6 +27,7 @@ let Company = class Company {
     createDt;
     escuelas;
     breakfastMenus;
+    conduces;
 };
 exports.Company = Company;
 __decorate([
@@ -76,6 +78,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => menu_desayuno_entity_1.MenuDesayuno, (m) => m.company),
     __metadata("design:type", Array)
 ], Company.prototype, "breakfastMenus", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => conduces_desayuno_entity_1.ConduceDesayuno, (conduce) => conduce.company),
+    __metadata("design:type", Array)
+], Company.prototype, "conduces", void 0);
 exports.Company = Company = __decorate([
     (0, typeorm_1.Entity)('company')
 ], Company);

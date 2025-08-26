@@ -18,6 +18,7 @@ const users_module_1 = require("./modules/users/users.module");
 const escuela_module_1 = require("./modules/escuelas/escuela.module");
 const articulos_module_1 = require("./modules/articulos/articulos.module");
 const menu_module_1 = require("./modules/menu/menu.module");
+const conduces_desayuno_module_1 = require("./modules/conduces-desayuno/conduces-desayuno.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -33,7 +34,8 @@ exports.AppModule = AppModule = __decorate([
             users_module_1.UsersModule,
             escuela_module_1.EscuelasModule,
             articulos_module_1.ArticulosModule,
-            menu_module_1.MenuModule
+            menu_module_1.MenuModule,
+            conduces_desayuno_module_1.ConducesDesayunoModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

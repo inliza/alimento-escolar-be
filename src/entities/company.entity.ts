@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Escuela } from './escuela.entity';
 import { MenuDesayuno } from './menu-desayuno.entity';
+import { ConduceDesayuno } from 'src/entities/conduces-desayuno.entity';
 
 @Entity('company')
 export class Company {
@@ -40,4 +41,7 @@ export class Company {
 
     @OneToMany(() => MenuDesayuno, (m) => m.company)
     breakfastMenus?: MenuDesayuno[];
+
+    @OneToMany(() => ConduceDesayuno, (conduce) => conduce.company)
+    conduces: ConduceDesayuno[];
 }

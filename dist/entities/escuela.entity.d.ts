@@ -1,6 +1,7 @@
 import { Localidad } from './localidad.entity';
 import { Distrito } from './distrito.entity';
 import { Company } from './company.entity';
+import { ConduceDesayuno } from 'src/entities/conduces-desayuno.entity';
 export declare class Escuela {
     id: number;
     nombre: string;
@@ -19,4 +20,5 @@ export declare class Escuela {
     localidad: Localidad;
     distrito: Distrito;
     company?: Company;
+    conduces: ConduceDesayuno[];
 }

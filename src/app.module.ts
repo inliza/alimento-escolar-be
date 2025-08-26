@@ -9,6 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { EscuelasModule } from './modules/escuelas/escuela.module';
 import { ArticulosModule } from './modules/articulos/articulos.module';
 import { MenuModule } from './modules/menu/menu.module';
+import { ConducesDesayunoModule } from './modules/conduces-desayuno/conduces-desayuno.module';
 
 @Module({
   imports: [CommonModule,
@@ -21,7 +22,8 @@ import { MenuModule } from './modules/menu/menu.module';
     UsersModule,
     EscuelasModule,
     ArticulosModule,
-    MenuModule
+    MenuModule,
+    ConducesDesayunoModule
   ],
   controllers: [AppController],
   providers: [AppService],

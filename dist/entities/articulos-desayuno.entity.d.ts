@@ -1,4 +1,5 @@
 import { MenuDesayuno } from './menu-desayuno.entity';
+import { ConduceDesayuno } from 'src/entities/conduces-desayuno.entity';
 export declare class ArticuloDesayuno {
     id: number;
     nombre: string;
@@ -6,4 +7,5 @@ export declare class ArticuloDesayuno {
     itbis: boolean;
     isDeleted: boolean;
     menus?: MenuDesayuno[];
+    conduces: ConduceDesayuno[];
 }

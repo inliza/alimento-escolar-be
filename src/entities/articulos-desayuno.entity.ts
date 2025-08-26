@@ -6,6 +6,7 @@ import {
   Index,
 } from 'typeorm';
 import { MenuDesayuno } from './menu-desayuno.entity';
+import { ConduceDesayuno } from 'src/entities/conduces-desayuno.entity';
 
 @Entity({ name: 'articulos_desayuno' })
 export class ArticuloDesayuno {
@@ -28,5 +29,7 @@ export class ArticuloDesayuno {
   @OneToMany(() => MenuDesayuno, (menu) => menu.articulo, { cascade: false })
   menus?: MenuDesayuno[];
 
+  @OneToMany(() => ConduceDesayuno, (conduce) => conduce.articulo)
+  conduces: ConduceDesayuno[];
 
 }
