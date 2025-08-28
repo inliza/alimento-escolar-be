@@ -48,7 +48,7 @@ export class ConduceDesayunoService {
                     precio,
                     total,
                     itbis,
-                    fechaEntrega: new Date(dto.fecha), // espera 'YYYY-MM-DD'
+                    fechaEntrega: dto.fecha, // espera 'YYYY-MM-DD'
                     deleted: false,
                 });
 
@@ -100,8 +100,9 @@ export class ConduceDesayunoService {
             const qb = this.conduceRepo
                 .createQueryBuilder('c')
                 .leftJoinAndSelect('c.escuela', 'escuela')
+                .leftJoinAndSelect('escuela.localidad', 'localidad') // 👈 añade localidad
+                .leftJoinAndSelect('escuela.distrito', 'distrito')   // 👈 añade distrito
                 .leftJoinAndSelect('c.articulo', 'articulo')
-                .leftJoinAndSelect('c.company', 'company')
                 .where('c.deleted = false')
                 .andWhere('c.companyId = :companyId', { companyId });
 

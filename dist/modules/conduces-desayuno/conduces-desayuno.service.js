@@ -49,7 +49,7 @@ let ConduceDesayunoService = class ConduceDesayunoService {
                     precio,
                     total,
                     itbis,
-                    fechaEntrega: new Date(dto.fecha),
+                    fechaEntrega: dto.fecha,
                     deleted: false,
                 });
                 const result = await qr.manager.insert(conduces_desayuno_entity_1.ConduceDesayuno, entity);
@@ -88,8 +88,9 @@ let ConduceDesayunoService = class ConduceDesayunoService {
             const qb = this.conduceRepo
                 .createQueryBuilder('c')
                 .leftJoinAndSelect('c.escuela', 'escuela')
+                .leftJoinAndSelect('escuela.localidad', 'localidad')
+                .leftJoinAndSelect('escuela.distrito', 'distrito')
                 .leftJoinAndSelect('c.articulo', 'articulo')
-                .leftJoinAndSelect('c.company', 'company')
                 .where('c.deleted = false')
                 .andWhere('c.companyId = :companyId', { companyId });
             if (d2) {

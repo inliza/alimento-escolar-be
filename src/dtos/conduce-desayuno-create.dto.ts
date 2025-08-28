@@ -19,7 +19,6 @@ export class CreateConduceDto {
     @Min(0)
     itbis?: number;          // numeric(12,2) | null
 
-    @IsDate()
-    @Type(() => Date)
-    fecha: Date;     // 'YYYY-MM-DD'
+    @IsDateString()   // espera 'YYYY-MM-DD' (ISO 8601 válida)
+    fecha: string;    // <-- string, no Date
 }

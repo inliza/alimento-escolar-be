@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateConduceDto = void 0;
-const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class CreateConduceDto {
     codigo;
@@ -49,8 +48,7 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateConduceDto.prototype, "itbis", void 0);
 __decorate([
-    (0, class_validator_1.IsDate)(),
-    (0, class_transformer_1.Type)(() => Date),
-    __metadata("design:type", Date)
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", String)
 ], CreateConduceDto.prototype, "fecha", void 0);
 //# sourceMappingURL=conduce-desayuno-create.dto.js.map

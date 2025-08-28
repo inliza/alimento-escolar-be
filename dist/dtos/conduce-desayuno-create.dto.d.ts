@@ -5,5 +5,5 @@ export declare class CreateConduceDto {
     cantidad: number;
     precio: number;
     itbis?: number;
-    fecha: Date;
+    fecha: string;
 }
