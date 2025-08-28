@@ -63,6 +63,7 @@ export class EscuelasService {
   }
 
   async findAllLocalidades(idProvince: number): Promise<ServiceResponse<Localidad[]>> {
+    
     const res = await this.localidadRepository.find({
       where: { idprovincia: idProvince }
     });

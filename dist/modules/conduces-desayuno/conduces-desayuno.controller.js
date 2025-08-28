@@ -30,8 +30,8 @@ let ConducesDesayunoController = class ConducesDesayunoController {
         const res = await this.service.createBulk(dtos, request.claims.company);
         return response.status(res.code).send(res);
     }
-    async getPorFecha(request, desde, hasta) {
-        return this.service.findByFechaRango(request.claims.company, desde, hasta);
+    async getPorFecha(request, desde, hasta, escuelaId = '0') {
+        return this.service.findByFechaRango(request.claims.company, desde, hasta, Number(escuelaId));
     }
     async softDelete(request, id) {
         return this.service.softDelete(Number(id), request.claims.company);
@@ -68,8 +68,9 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Query)('from')),
     __param(2, (0, common_1.Query)('to')),
+    __param(3, (0, common_1.Query)('schoolId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", Promise)
 ], ConducesDesayunoController.prototype, "getPorFecha", null);
 __decorate([

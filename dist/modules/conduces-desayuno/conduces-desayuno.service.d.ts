@@ -7,7 +7,7 @@ export declare class ConduceDesayunoService {
     private readonly dataSource;
     constructor(conduceRepo: Repository<ConduceDesayuno>, dataSource: DataSource);
     createBulk(dtos: CreateConduceDto[], companyId: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
-    findByFechaRango(companyId: number, desde: string, hasta?: string): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
+    findByFechaRango(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
     softDelete(id: number, companyId?: number): Promise<ServiceResponse<string | null>>;
     getUltimasFechasConTotales(companyId: number): Promise<ServiceResponse<{
         fecha: string;

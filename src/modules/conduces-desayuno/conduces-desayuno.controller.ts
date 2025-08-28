@@ -36,8 +36,9 @@ export class ConducesDesayunoController {
         @Req() request,
         @Query('from') desde: string,
         @Query('to') hasta?: string,
+        @Query('schoolId') escuelaId: string = '0',
     ): Promise<ServiceResponse> {
-        return this.service.findByFechaRango(request.claims.company, desde, hasta);
+        return this.service.findByFechaRango(request.claims.company, desde, hasta, Number(escuelaId));
     }
 
     @Delete('delete/:id')

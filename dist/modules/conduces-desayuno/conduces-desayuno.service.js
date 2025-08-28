@@ -75,7 +75,7 @@ let ConduceDesayunoService = class ConduceDesayunoService {
             await qr.release();
         }
     }
-    async findByFechaRango(companyId, desde, hasta) {
+    async findByFechaRango(companyId, desde, hasta, escuelaId = 0) {
         try {
             if (!companyId || !desde) {
                 return new service_response_1.ServiceResponse(400, null, 'companyId y desde son requeridos.');
@@ -97,6 +97,9 @@ let ConduceDesayunoService = class ConduceDesayunoService {
             }
             else {
                 qb.andWhere('c.fechaEntrega = :d1', { d1 });
+            }
+            if (Number(escuelaId) > 0) {
+                qb.andWhere('c.escuelaId = :escuelaId', { escuelaId });
             }
             const data = await qb
                 .orderBy('c.fechaEntrega', 'ASC')

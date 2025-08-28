@@ -83,6 +83,7 @@ export class ConduceDesayunoService {
         companyId: number,
         desde: string,          // 'YYYY-MM-DD'
         hasta?: string,         // 'YYYY-MM-DD' (opcional)
+        escuelaId: number = 0,  // 0 = todas las escuelas
     ): Promise<ServiceResponse<ConduceDesayuno[] | null>> {
         try {
             if (!companyId || !desde) {
@@ -104,10 +105,16 @@ export class ConduceDesayunoService {
                 .where('c.deleted = false')
                 .andWhere('c.companyId = :companyId', { companyId });
 
+            // Fecha
             if (d2) {
                 qb.andWhere('c.fechaEntrega BETWEEN :d1 AND :d2', { d1, d2 });
             } else {
                 qb.andWhere('c.fechaEntrega = :d1', { d1 });
+            }
+
+            // Escuela (0 = todas)
+            if (Number(escuelaId) > 0) {
+                qb.andWhere('c.escuelaId = :escuelaId', { escuelaId });
             }
 
             const data = await qb
