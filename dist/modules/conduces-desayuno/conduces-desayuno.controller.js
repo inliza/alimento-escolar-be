@@ -40,6 +40,10 @@ let ConducesDesayunoController = class ConducesDesayunoController {
         const res = await this.service.getUltimasFechasConTotales(request.claims.company);
         return response.status(res.code).send(res);
     }
+    async getRelacion(request, response, desde, hasta, escuelaId = '0') {
+        const res = await this.service.getRelacionPivot(Number(request.claims.company), String(desde), hasta ? String(hasta) : undefined, Number(escuelaId));
+        return response.status(res.code).send(res);
+    }
 };
 exports.ConducesDesayunoController = ConducesDesayunoController;
 __decorate([
@@ -91,6 +95,18 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ConducesDesayunoController.prototype, "getData", null);
+__decorate([
+    (0, common_1.Get)('relacion'),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __param(2, (0, common_1.Query)('from')),
+    __param(3, (0, common_1.Query)('to')),
+    __param(4, (0, common_1.Query)('schoolId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, String, String, String]),
+    __metadata("design:returntype", Promise)
+], ConducesDesayunoController.prototype, "getRelacion", null);
 exports.ConducesDesayunoController = ConducesDesayunoController = __decorate([
     (0, common_1.Controller)('conduces-desayuno'),
     __metadata("design:paramtypes", [conduces_desayuno_service_1.ConduceDesayunoService])

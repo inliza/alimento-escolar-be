@@ -56,5 +56,26 @@ export class ConducesDesayunoController {
         return response.status(res.code).send(res);
     }
 
+    @Get('relacion')
+    @UseGuards(AuthMiddleware)
+    async getRelacion(
+        @Req() request,
+        @Res() response,
+        @Query('from') desde: string,
+        @Query('to') hasta?: string,
+        @Query('schoolId') escuelaId: string = '0',
+    ): Promise<ServiceResponse> {
+
+        const res = await
+
+            this.service.getRelacionPivot(
+                Number(request.claims.company),
+                String(desde),
+                hasta ? String(hasta) : undefined,
+                Number(escuelaId),
+            );
+        return response.status(res.code).send(res);
+
+    }
 
 }

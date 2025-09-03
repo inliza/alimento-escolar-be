@@ -6,6 +6,7 @@ export declare class ConduceDesayunoService {
     private readonly conduceRepo;
     private readonly dataSource;
     constructor(conduceRepo: Repository<ConduceDesayuno>, dataSource: DataSource);
+    getRelacionPivot(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<any[] | null>>;
     createBulk(dtos: CreateConduceDto[], companyId: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
     findByFechaRango(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
     softDelete(id: number, companyId?: number): Promise<ServiceResponse<string | null>>;

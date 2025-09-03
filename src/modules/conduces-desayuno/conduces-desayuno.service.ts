@@ -1,6 +1,7 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateConduceDto } from 'src/dtos/conduce-desayuno-create.dto';
+import { ArticuloDesayuno } from 'src/entities/articulos-desayuno.entity';
 import { ConduceDesayuno } from 'src/entities/conduces-desayuno.entity';
 import { ServiceResponse } from 'src/helpers/service-response';
 import { DataSource, Repository } from 'typeorm';
@@ -14,7 +15,85 @@ export class ConduceDesayunoService {
     ) { }
 
 
-    // Servicio
+    async getRelacionPivot(
+        companyId: number,
+        desde: string,                 // 'YYYY-MM-DD'
+        hasta?: string,                // 'YYYY-MM-DD' (opcional)
+        escuelaId: number = 0,         // 0 = todas
+    ): Promise<ServiceResponse<any[] | null>> {
+        try {
+            if (!companyId || !desde) {
+                return new ServiceResponse(400, null, 'companyId y desde son requeridos.');
+            }
+
+            // Normaliza fechas si vienen invertidas
+            let d1 = desde;
+            let d2 = hasta;
+            if (d2 && d2 < d1) [d1, d2] = [d2, d1];
+
+            // 1) Traer artículos para construir columnas dinámicas
+            const articulos = await this.dataSource.getRepository(ArticuloDesayuno).find({
+                select: ['id', 'nombre'],
+                order: { id: 'ASC' },
+            });
+            if (!articulos.length) {
+                return new ServiceResponse(200, []);
+            }
+
+            // 2) Columnas dinámicas tipo SUM(CASE...) AS "a<ID>"
+            const articuloCols = articulos
+                .map(a => `SUM(CASE WHEN c.articuloid = ${a.id} THEN c.cantidad ELSE 0 END) AS "a${a.id}"`)
+                .join(',\n          ');
+
+            // 3) WHERE con placeholders posicionales
+            const whereParts: string[] = [
+                `c.deleted = FALSE`,
+                `c.companyid = $1`,
+            ];
+            const paramsArr: any[] = [companyId];
+            let paramIndex = 2;
+
+            if (d2) {
+                whereParts.push(`c.fecha_entrega BETWEEN $${paramIndex} AND $${paramIndex + 1}`);
+                paramsArr.push(d1, d2);
+                paramIndex += 2;
+            } else {
+                whereParts.push(`c.fecha_entrega = $${paramIndex}`);
+                paramsArr.push(d1);
+                paramIndex += 1;
+            }
+
+            if (Number(escuelaId) > 0) {
+                whereParts.push(`c.escuelaid = $${paramIndex}`);
+                paramsArr.push(escuelaId);
+                paramIndex += 1;
+            }
+
+            const sql = `
+      SELECT
+        to_char(c.fecha_entrega, 'YYYY-MM-DD') AS "fecha",
+        c.codigo_conduce                        AS "numeroConduce",
+        e.codigoescuela                        AS "codigoEscuela",
+        e.nombre                                AS "nombreEscuela",
+        ${articuloCols}
+      FROM public.conduces_desayuno c
+      JOIN public.escuelas e ON e.id = c.escuelaid
+      WHERE
+        ${whereParts.join('\n        AND ')}
+      GROUP BY
+        c.fecha_entrega, c.codigo_conduce, e.codigoescuela, e.nombre
+      ORDER BY
+        c.fecha_entrega ASC, c.codigo_conduce ASC;
+    `;
+
+            const rows = await this.dataSource.query(sql, paramsArr);
+
+            return new ServiceResponse(200, rows);
+        } catch (error) {
+            return new ServiceResponse(500, null, 'Error generando relación pivotada.', error);
+        }
+    }
+
     async createBulk(
         dtos: CreateConduceDto[], companyId: number
     ): Promise<ServiceResponse<ConduceDesayuno[] | null>> {

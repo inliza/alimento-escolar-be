@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConduceDesayunoService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const articulos_desayuno_entity_1 = require("../../entities/articulos-desayuno.entity");
 const conduces_desayuno_entity_1 = require("../../entities/conduces-desayuno.entity");
 const service_response_1 = require("../../helpers/service-response");
 const typeorm_2 = require("typeorm");
@@ -24,6 +25,69 @@ let ConduceDesayunoService = class ConduceDesayunoService {
     constructor(conduceRepo, dataSource) {
         this.conduceRepo = conduceRepo;
         this.dataSource = dataSource;
+    }
+    async getRelacionPivot(companyId, desde, hasta, escuelaId = 0) {
+        try {
+            if (!companyId || !desde) {
+                return new service_response_1.ServiceResponse(400, null, 'companyId y desde son requeridos.');
+            }
+            let d1 = desde;
+            let d2 = hasta;
+            if (d2 && d2 < d1)
+                [d1, d2] = [d2, d1];
+            const articulos = await this.dataSource.getRepository(articulos_desayuno_entity_1.ArticuloDesayuno).find({
+                select: ['id', 'nombre'],
+                order: { id: 'ASC' },
+            });
+            if (!articulos.length) {
+                return new service_response_1.ServiceResponse(200, []);
+            }
+            const articuloCols = articulos
+                .map(a => `SUM(CASE WHEN c.articuloid = ${a.id} THEN c.cantidad ELSE 0 END) AS "a${a.id}"`)
+                .join(',\n          ');
+            const whereParts = [
+                `c.deleted = FALSE`,
+                `c.companyid = $1`,
+            ];
+            const paramsArr = [companyId];
+            let paramIndex = 2;
+            if (d2) {
+                whereParts.push(`c.fecha_entrega BETWEEN $${paramIndex} AND $${paramIndex + 1}`);
+                paramsArr.push(d1, d2);
+                paramIndex += 2;
+            }
+            else {
+                whereParts.push(`c.fecha_entrega = $${paramIndex}`);
+                paramsArr.push(d1);
+                paramIndex += 1;
+            }
+            if (Number(escuelaId) > 0) {
+                whereParts.push(`c.escuelaid = $${paramIndex}`);
+                paramsArr.push(escuelaId);
+                paramIndex += 1;
+            }
+            const sql = `
+      SELECT
+        to_char(c.fecha_entrega, 'YYYY-MM-DD') AS "fecha",
+        c.codigo_conduce                        AS "numeroConduce",
+        e.codigoescuela                        AS "codigoEscuela",
+        e.nombre                                AS "nombreEscuela",
+        ${articuloCols}
+      FROM public.conduces_desayuno c
+      JOIN public.escuelas e ON e.id = c.escuelaid
+      WHERE
+        ${whereParts.join('\n        AND ')}
+      GROUP BY
+        c.fecha_entrega, c.codigo_conduce, e.codigoescuela, e.nombre
+      ORDER BY
+        c.fecha_entrega ASC, c.codigo_conduce ASC;
+    `;
+            const rows = await this.dataSource.query(sql, paramsArr);
+            return new service_response_1.ServiceResponse(200, rows);
+        }
+        catch (error) {
+            return new service_response_1.ServiceResponse(500, null, 'Error generando relación pivotada.', error);
+        }
     }
     async createBulk(dtos, companyId) {
         if (!Array.isArray(dtos) || dtos.length === 0) {
