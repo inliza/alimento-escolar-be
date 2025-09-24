@@ -9,12 +9,15 @@ export declare class ConduceDesayunoService {
     getRelacionPivot(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<any[] | null>>;
     createBulk(dtos: CreateConduceDto[], companyId: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
     findByFechaRango(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
+    findByFechaRangoDeleted(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
     softDelete(id: number, companyId?: number): Promise<ServiceResponse<string | null>>;
     getUltimasFechasConTotales(companyId: number): Promise<ServiceResponse<{
         fecha: string;
         total: number;
     }[] | null>>;
+    restoreConduces(ids: number[]): Promise<ServiceResponse<string | null>>;
     private mapPgErrorToServiceResponse;
+    private parseUniqueDetail;
     getSiguienteCodigo(companyId: number, base?: number): Promise<ServiceResponse<any>>;
     private getUltimoConducePorCompany;
 }

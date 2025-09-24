@@ -208,6 +208,56 @@ export class ConduceDesayunoService {
         }
     }
 
+    async findByFechaRangoDeleted(
+        companyId: number,
+        desde: string,          // 'YYYY-MM-DD'
+        hasta?: string,         // 'YYYY-MM-DD' (opcional)
+        escuelaId: number = 0,  // 0 = todas las escuelas
+    ): Promise<ServiceResponse<ConduceDesayuno[] | null>> {
+        try {
+            if (!companyId || !desde) {
+                return new ServiceResponse(400, null, 'companyId y desde son requeridos.');
+            }
+
+            // Normaliza y corrige si vienen invertidas
+            let d1 = desde;
+            let d2 = hasta;
+            if (d2 && d2 < d1) {
+                [d1, d2] = [d2, d1];
+            }
+
+            const qb = this.conduceRepo
+                .createQueryBuilder('c')
+                .leftJoinAndSelect('c.escuela', 'escuela')
+                .leftJoinAndSelect('escuela.localidad', 'localidad') // 👈 añade localidad
+                .leftJoinAndSelect('escuela.distrito', 'distrito')   // 👈 añade distrito
+                .leftJoinAndSelect('c.articulo', 'articulo')
+                .where('c.deleted = true')
+                .andWhere('c.companyId = :companyId', { companyId });
+
+            // Fecha
+            if (d2) {
+                qb.andWhere('c.fechaEntrega BETWEEN :d1 AND :d2', { d1, d2 });
+            } else {
+                qb.andWhere('c.fechaEntrega = :d1', { d1 });
+            }
+
+            // Escuela (0 = todas)
+            if (Number(escuelaId) > 0) {
+                qb.andWhere('c.escuelaId = :escuelaId', { escuelaId });
+            }
+
+            const data = await qb
+                .orderBy('c.fechaEntrega', 'ASC')
+                .addOrderBy('c.codigoConduce', 'ASC')
+                .getMany();
+
+            return new ServiceResponse(200, data);
+        } catch (error) {
+            return new ServiceResponse(500, null, 'Error al filtrar conduces eliminados por fecha.', error);
+        }
+    }
+
     async softDelete(id: number, companyId?: number): Promise<ServiceResponse<string | null>> {
         try {
             const qb = this.conduceRepo.createQueryBuilder('c')
@@ -267,6 +317,29 @@ export class ConduceDesayunoService {
             );
         }
     }
+async restoreConduces(ids: number[]): Promise<ServiceResponse<string | null>> {
+  try {
+    await this.conduceRepo.update(ids, { deleted: false });
+    return new ServiceResponse(200, null, 'Conduces restaurados correctamente.');
+  } catch (error: any) {
+    const code = error?.code ?? error?.driverError?.code;
+
+    if (code === '23505') {
+      const detail = error?.detail ?? error?.driverError?.detail ?? '';
+      const parsed = this.parseUniqueDetail(detail);
+
+      const friendly =
+        parsed
+          ? `Ya existe un conduce activo para la escuela ${parsed.escuelaid} el ${parsed.fecha_entrega} (en esta cuenta).`
+          : 'Ya existe un conduce activo con la misma fecha y escuela.';
+
+      return new ServiceResponse(409, null, friendly, error);
+    }
+
+    return new ServiceResponse(500, null, 'Error restaurando conduces', error);
+  }
+}
+
 
     /** Traduce errores comunes de Postgres a ServiceResponse legible */
     private mapPgErrorToServiceResponse(
@@ -343,6 +416,28 @@ export class ConduceDesayunoService {
             'Error interno al crear conduces.',
             { code, constraint, detail, raw: err }
         );
+    }
+
+    private parseUniqueDetail(detail: string): { fecha_entrega: string; companyid: string; escuelaid: string } | null {
+        // Match: Key (fecha_entrega, companyid, escuelaid)=(2025-08-27, 2, 5) already exists.
+        const m = detail.match(/Key \(([^)]+)\)=\(([^)]+)\)/i);
+        if (!m) return null;
+
+        const cols = m[1].split(',').map(s => s.trim());
+        const vals = m[2].split(',').map(s => s.trim());
+
+        const obj: Record<string, string> = {};
+        cols.forEach((c, i) => (obj[c] = vals[i]));
+
+        // Normaliza claves esperadas si están presentes
+        const fecha = obj['fecha_entrega'];
+        const company = obj['companyid'];
+        const escuela = obj['escuelaid'];
+
+        if (fecha && company && escuela) {
+            return { fecha_entrega: fecha, companyid: company, escuelaid: escuela };
+        }
+        return null;
     }
 
     async getSiguienteCodigo(companyId: number, base = 19002): Promise<ServiceResponse<any>> {

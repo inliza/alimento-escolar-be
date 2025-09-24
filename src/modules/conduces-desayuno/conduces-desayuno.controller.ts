@@ -41,13 +41,29 @@ export class ConducesDesayunoController {
         return this.service.findByFechaRango(request.claims.company, desde, hasta, Number(escuelaId));
     }
 
+    @Get('deleted/by-date')
+    @UseGuards(AuthMiddleware)
+    async getPorFechaDeleted(
+        @Req() request,
+        @Query('from') desde: string,
+        @Query('to') hasta?: string,
+        @Query('schoolId') escuelaId: string = '0',
+    ): Promise<ServiceResponse> {
+        return this.service.findByFechaRangoDeleted(request.claims.company, desde, hasta, Number(escuelaId));
+    }
+
     @Delete('delete/:id')
     @UseGuards(AuthMiddleware)
     async softDelete(@Req() request, @Param('id') id: string) {
         return this.service.softDelete(Number(id), request.claims.company,);
     }
 
-
+    @Post('restore')
+    @UseGuards(AuthMiddleware)
+    async restore(@Body('ids') ids: number[], @Res() response) {
+        const res = await this.service.restoreConduces(ids);
+        return response.status(res.code).send(res);
+    }
 
     @Get('data')
     @UseGuards(AuthMiddleware)

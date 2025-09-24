@@ -176,6 +176,43 @@ let ConduceDesayunoService = class ConduceDesayunoService {
             return new service_response_1.ServiceResponse(500, null, 'Error al filtrar conduces por fecha.', error);
         }
     }
+    async findByFechaRangoDeleted(companyId, desde, hasta, escuelaId = 0) {
+        try {
+            if (!companyId || !desde) {
+                return new service_response_1.ServiceResponse(400, null, 'companyId y desde son requeridos.');
+            }
+            let d1 = desde;
+            let d2 = hasta;
+            if (d2 && d2 < d1) {
+                [d1, d2] = [d2, d1];
+            }
+            const qb = this.conduceRepo
+                .createQueryBuilder('c')
+                .leftJoinAndSelect('c.escuela', 'escuela')
+                .leftJoinAndSelect('escuela.localidad', 'localidad')
+                .leftJoinAndSelect('escuela.distrito', 'distrito')
+                .leftJoinAndSelect('c.articulo', 'articulo')
+                .where('c.deleted = true')
+                .andWhere('c.companyId = :companyId', { companyId });
+            if (d2) {
+                qb.andWhere('c.fechaEntrega BETWEEN :d1 AND :d2', { d1, d2 });
+            }
+            else {
+                qb.andWhere('c.fechaEntrega = :d1', { d1 });
+            }
+            if (Number(escuelaId) > 0) {
+                qb.andWhere('c.escuelaId = :escuelaId', { escuelaId });
+            }
+            const data = await qb
+                .orderBy('c.fechaEntrega', 'ASC')
+                .addOrderBy('c.codigoConduce', 'ASC')
+                .getMany();
+            return new service_response_1.ServiceResponse(200, data);
+        }
+        catch (error) {
+            return new service_response_1.ServiceResponse(500, null, 'Error al filtrar conduces eliminados por fecha.', error);
+        }
+    }
     async softDelete(id, companyId) {
         try {
             const qb = this.conduceRepo.createQueryBuilder('c')
@@ -220,6 +257,24 @@ let ConduceDesayunoService = class ConduceDesayunoService {
             return new service_response_1.ServiceResponse(500, null, 'Error obteniendo totales por fecha', error);
         }
     }
+    async restoreConduces(ids) {
+        try {
+            await this.conduceRepo.update(ids, { deleted: false });
+            return new service_response_1.ServiceResponse(200, null, 'Conduces restaurados correctamente.');
+        }
+        catch (error) {
+            const code = error?.code ?? error?.driverError?.code;
+            if (code === '23505') {
+                const detail = error?.detail ?? error?.driverError?.detail ?? '';
+                const parsed = this.parseUniqueDetail(detail);
+                const friendly = parsed
+                    ? `Ya existe un conduce activo para la escuela ${parsed.escuelaid} el ${parsed.fecha_entrega} (en esta cuenta).`
+                    : 'Ya existe un conduce activo con la misma fecha y escuela.';
+                return new service_response_1.ServiceResponse(409, null, friendly, error);
+            }
+            return new service_response_1.ServiceResponse(500, null, 'Error restaurando conduces', error);
+        }
+    }
     mapPgErrorToServiceResponse(err) {
         const code = err?.code;
         const constraint = err?.constraint;
@@ -250,6 +305,22 @@ let ConduceDesayunoService = class ConduceDesayunoService {
             return new service_response_1.ServiceResponse(400, null, 'Formato de dato inválido (por ejemplo, fecha o número).', { code, constraint, detail });
         }
         return new service_response_1.ServiceResponse(500, null, 'Error interno al crear conduces.', { code, constraint, detail, raw: err });
+    }
+    parseUniqueDetail(detail) {
+        const m = detail.match(/Key \(([^)]+)\)=\(([^)]+)\)/i);
+        if (!m)
+            return null;
+        const cols = m[1].split(',').map(s => s.trim());
+        const vals = m[2].split(',').map(s => s.trim());
+        const obj = {};
+        cols.forEach((c, i) => (obj[c] = vals[i]));
+        const fecha = obj['fecha_entrega'];
+        const company = obj['companyid'];
+        const escuela = obj['escuelaid'];
+        if (fecha && company && escuela) {
+            return { fecha_entrega: fecha, companyid: company, escuelaid: escuela };
+        }
+        return null;
     }
     async getSiguienteCodigo(companyId, base = 19002) {
         const ultimo = await this.getUltimoConducePorCompany(companyId);

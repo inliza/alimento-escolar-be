@@ -33,8 +33,15 @@ let ConducesDesayunoController = class ConducesDesayunoController {
     async getPorFecha(request, desde, hasta, escuelaId = '0') {
         return this.service.findByFechaRango(request.claims.company, desde, hasta, Number(escuelaId));
     }
+    async getPorFechaDeleted(request, desde, hasta, escuelaId = '0') {
+        return this.service.findByFechaRangoDeleted(request.claims.company, desde, hasta, Number(escuelaId));
+    }
     async softDelete(request, id) {
         return this.service.softDelete(Number(id), request.claims.company);
+    }
+    async restore(ids, response) {
+        const res = await this.service.restoreConduces(ids);
+        return response.status(res.code).send(res);
     }
     async getData(request, response) {
         const res = await this.service.getUltimasFechasConTotales(request.claims.company);
@@ -78,6 +85,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ConducesDesayunoController.prototype, "getPorFecha", null);
 __decorate([
+    (0, common_1.Get)('deleted/by-date'),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('from')),
+    __param(2, (0, common_1.Query)('to')),
+    __param(3, (0, common_1.Query)('schoolId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:returntype", Promise)
+], ConducesDesayunoController.prototype, "getPorFechaDeleted", null);
+__decorate([
     (0, common_1.Delete)('delete/:id'),
     (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
     __param(0, (0, common_1.Req)()),
@@ -86,6 +104,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], ConducesDesayunoController.prototype, "softDelete", null);
+__decorate([
+    (0, common_1.Post)('restore'),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
+    __param(0, (0, common_1.Body)('ids')),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, Object]),
+    __metadata("design:returntype", Promise)
+], ConducesDesayunoController.prototype, "restore", null);
 __decorate([
     (0, common_1.Get)('data'),
     (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
