@@ -16,6 +16,7 @@ export declare class ConduceDesayunoService {
         total: number;
     }[] | null>>;
     restoreConduces(ids: number[]): Promise<ServiceResponse<string | null>>;
+    softDeleteBulk(ids: number[], companyId?: number): Promise<ServiceResponse<string | null>>;
     private mapPgErrorToServiceResponse;
     private parseUniqueDetail;
     getSiguienteCodigo(companyId: number, base?: number): Promise<ServiceResponse<any>>;

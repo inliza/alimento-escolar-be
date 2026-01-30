@@ -58,6 +58,13 @@ export class ConducesDesayunoController {
         return this.service.softDelete(Number(id), request.claims.company,);
     }
 
+    @Post('bulk-delete')
+    @UseGuards(AuthMiddleware)
+    async softDeleteBulk(@Body('ids') ids: number[], @Req() request, @Res() response) {
+        const res = await this.service.softDeleteBulk(ids, request.claims.company);
+        return response.status(res.code).send(res);
+    }
+
     @Post('restore')
     @UseGuards(AuthMiddleware)
     async restore(@Body('ids') ids: number[], @Res() response) {

@@ -340,6 +340,28 @@ async restoreConduces(ids: number[]): Promise<ServiceResponse<string | null>> {
   }
 }
 
+    async softDeleteBulk(ids: number[], companyId?: number): Promise<ServiceResponse<string | null>> {
+        try {
+            if (!Array.isArray(ids) || ids.length === 0) {
+                return new ServiceResponse(400, null, 'Debe proporcionar al menos un id.');
+            }
+
+            const qb = this.conduceRepo.createQueryBuilder()
+                .update(ConduceDesayuno)
+                .set({ deleted: true })
+                .whereInIds(ids);
+
+            if (companyId) {
+                qb.andWhere('companyId = :companyId', { companyId });
+            }
+
+            await qb.execute();
+
+            return new ServiceResponse(200, null, 'Conduces eliminados correctamente');
+        } catch (error) {
+            return new ServiceResponse(500, null, 'Error eliminando conduces', error);
+        }
+    }
 
     /** Traduce errores comunes de Postgres a ServiceResponse legible */
     private mapPgErrorToServiceResponse(

@@ -9,6 +9,7 @@ export declare class ConducesDesayunoController {
     getPorFecha(request: any, desde: string, hasta?: string, escuelaId?: string): Promise<ServiceResponse>;
     getPorFechaDeleted(request: any, desde: string, hasta?: string, escuelaId?: string): Promise<ServiceResponse>;
     softDelete(request: any, id: string): Promise<ServiceResponse<string | null>>;
+    softDeleteBulk(ids: number[], request: any, response: any): Promise<any>;
     restore(ids: number[], response: any): Promise<any>;
     getData(request: any, response: any): Promise<ServiceResponse<any>>;
     getRelacion(request: any, response: any, desde: string, hasta?: string, escuelaId?: string): Promise<ServiceResponse>;

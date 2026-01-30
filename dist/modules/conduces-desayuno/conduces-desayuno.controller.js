@@ -39,6 +39,10 @@ let ConducesDesayunoController = class ConducesDesayunoController {
     async softDelete(request, id) {
         return this.service.softDelete(Number(id), request.claims.company);
     }
+    async softDeleteBulk(ids, request, response) {
+        const res = await this.service.softDeleteBulk(ids, request.claims.company);
+        return response.status(res.code).send(res);
+    }
     async restore(ids, response) {
         const res = await this.service.restoreConduces(ids);
         return response.status(res.code).send(res);
@@ -104,6 +108,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], ConducesDesayunoController.prototype, "softDelete", null);
+__decorate([
+    (0, common_1.Post)('bulk-delete'),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
+    __param(0, (0, common_1.Body)('ids')),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ConducesDesayunoController.prototype, "softDeleteBulk", null);
 __decorate([
     (0, common_1.Post)('restore'),
     (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
