@@ -213,13 +213,16 @@ export class ConduceDesayunoService {
         companyId: number,
         deleted: boolean,
     ): Promise<ServiceResponse<any | null>> {
-        const res = await this.conduceRepo.find({
-            where: {
-                codigoConduce,
-                companyId,
-                deleted,
-            },
-        });
+        const res = await this.conduceRepo
+            .createQueryBuilder('c')
+            .leftJoinAndSelect('c.escuela', 'escuela')
+            .leftJoinAndSelect('escuela.localidad', 'localidad')
+            .leftJoinAndSelect('escuela.distrito', 'distrito')
+            .leftJoinAndSelect('c.articulo', 'articulo')
+            .where('c.codigoConduce = :codigoConduce', { codigoConduce })
+            .andWhere('c.companyId = :companyId', { companyId })
+            .andWhere('c.deleted = :deleted', { deleted })
+            .getMany();
 
         return new ServiceResponse(res.length > 0 ? 200 : 404, res);
 
