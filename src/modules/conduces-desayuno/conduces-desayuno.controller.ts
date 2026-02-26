@@ -79,6 +79,22 @@ export class ConducesDesayunoController {
         return response.status(res.code).send(res);
     }
 
+    @Get('by-codigo')
+    @UseGuards(AuthMiddleware)
+    async findByCodigo(
+        @Query('codigo') codigo: string,
+        @Query('deleted') deleted: string,
+        @Req() request,
+        @Res() response
+    ) {
+        const res = await this.service.findByCodigo(
+            Number(codigo),
+            Number(request.claims.company),
+            deleted === 'true',
+        );
+        return response.status(res.code).send(res);
+    }
+
     @Get('relacion')
     @UseGuards(AuthMiddleware)
     async getRelacion(

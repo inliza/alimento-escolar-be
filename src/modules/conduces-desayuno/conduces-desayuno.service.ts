@@ -208,6 +208,23 @@ export class ConduceDesayunoService {
         }
     }
 
+    async findByCodigo(
+        codigoConduce: number,
+        companyId: number,
+        deleted: boolean,
+    ): Promise<ServiceResponse<any | null>> {
+        const res = await this.conduceRepo.find({
+            where: {
+                codigoConduce,
+                companyId,
+                deleted,
+            },
+        });
+
+        return new ServiceResponse(res.length > 0 ? 200 : 404, res);
+
+    }
+
     async findByFechaRangoDeleted(
         companyId: number,
         desde: string,          // 'YYYY-MM-DD'
@@ -317,28 +334,28 @@ export class ConduceDesayunoService {
             );
         }
     }
-async restoreConduces(ids: number[]): Promise<ServiceResponse<string | null>> {
-  try {
-    await this.conduceRepo.update(ids, { deleted: false });
-    return new ServiceResponse(200, null, 'Conduces restaurados correctamente.');
-  } catch (error: any) {
-    const code = error?.code ?? error?.driverError?.code;
+    async restoreConduces(ids: number[]): Promise<ServiceResponse<string | null>> {
+        try {
+            await this.conduceRepo.update(ids, { deleted: false });
+            return new ServiceResponse(200, null, 'Conduces restaurados correctamente.');
+        } catch (error: any) {
+            const code = error?.code ?? error?.driverError?.code;
 
-    if (code === '23505') {
-      const detail = error?.detail ?? error?.driverError?.detail ?? '';
-      const parsed = this.parseUniqueDetail(detail);
+            if (code === '23505') {
+                const detail = error?.detail ?? error?.driverError?.detail ?? '';
+                const parsed = this.parseUniqueDetail(detail);
 
-      const friendly =
-        parsed
-          ? `Ya existe un conduce activo para la escuela ${parsed.escuelaid} el ${parsed.fecha_entrega} (en esta cuenta).`
-          : 'Ya existe un conduce activo con la misma fecha y escuela.';
+                const friendly =
+                    parsed
+                        ? `Ya existe un conduce activo para la escuela ${parsed.escuelaid} el ${parsed.fecha_entrega} (en esta cuenta).`
+                        : 'Ya existe un conduce activo con la misma fecha y escuela.';
 
-      return new ServiceResponse(409, null, friendly, error);
+                return new ServiceResponse(409, null, friendly, error);
+            }
+
+            return new ServiceResponse(500, null, 'Error restaurando conduces', error);
+        }
     }
-
-    return new ServiceResponse(500, null, 'Error restaurando conduces', error);
-  }
-}
 
     async softDeleteBulk(ids: number[], companyId?: number): Promise<ServiceResponse<string | null>> {
         try {
