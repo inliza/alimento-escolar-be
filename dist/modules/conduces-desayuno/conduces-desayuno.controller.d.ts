@@ -12,5 +12,11 @@ export declare class ConducesDesayunoController {
     softDeleteBulk(ids: number[], request: any, response: any): Promise<any>;
     restore(ids: number[], response: any): Promise<any>;
     getData(request: any, response: any): Promise<ServiceResponse<any>>;
+    findByCodigo(codigo: string, deleted: string, request: any, response: any): Promise<any>;
     getRelacion(request: any, response: any, desde: string, hasta?: string, escuelaId?: string): Promise<ServiceResponse>;
+    updateRacionesActuales(body: {
+        ids: number[];
+        escuelaId?: number;
+        schoolId?: number;
+    }, request: any, response: any): Promise<any>;
 }

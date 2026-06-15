@@ -117,4 +117,22 @@ export class ConducesDesayunoController {
 
     }
 
+    @Post('update-raciones-actuales')
+    @UseGuards(AuthMiddleware)
+    async updateRacionesActuales(
+        @Body() body: { ids: number[]; escuelaId?: number; schoolId?: number },
+        @Req() request,
+        @Res() response,
+    ) {
+        const ids = body?.ids || [];
+        const escuelaId = body?.escuelaId ?? body?.schoolId;
+
+        if (!escuelaId) {
+            return response.status(400).send(new ServiceResponse(400, null, 'escuelaId es requerido en el body (escuelaId o schoolId).'));
+        }
+
+        const res = await this.service.updateConducesCantidadByEscuela(Number(escuelaId), Number(request.claims.company), ids);
+        return response.status(res.code).send(res);
+    }
+
 }

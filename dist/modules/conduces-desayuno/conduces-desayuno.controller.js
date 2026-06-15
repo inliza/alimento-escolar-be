@@ -16,6 +16,7 @@ exports.ConducesDesayunoController = void 0;
 const common_1 = require("@nestjs/common");
 const conduces_desayuno_service_1 = require("./conduces-desayuno.service");
 const auth_middleware_1 = require("../../common/middleware/auth.middleware");
+const service_response_1 = require("../../helpers/service-response");
 const conduce_desayuno_create_dto_1 = require("../../dtos/conduce-desayuno-create.dto");
 let ConducesDesayunoController = class ConducesDesayunoController {
     service;
@@ -51,8 +52,21 @@ let ConducesDesayunoController = class ConducesDesayunoController {
         const res = await this.service.getUltimasFechasConTotales(request.claims.company);
         return response.status(res.code).send(res);
     }
+    async findByCodigo(codigo, deleted, request, response) {
+        const res = await this.service.findByCodigo(Number(codigo), Number(request.claims.company), deleted === 'true');
+        return response.status(res.code).send(res);
+    }
     async getRelacion(request, response, desde, hasta, escuelaId = '0') {
         const res = await this.service.getRelacionPivot(Number(request.claims.company), String(desde), hasta ? String(hasta) : undefined, Number(escuelaId));
+        return response.status(res.code).send(res);
+    }
+    async updateRacionesActuales(body, request, response) {
+        const ids = body?.ids || [];
+        const escuelaId = body?.escuelaId ?? body?.schoolId;
+        if (!escuelaId) {
+            return response.status(400).send(new service_response_1.ServiceResponse(400, null, 'escuelaId es requerido en el body (escuelaId o schoolId).'));
+        }
+        const res = await this.service.updateConducesCantidadByEscuela(Number(escuelaId), Number(request.claims.company), ids);
         return response.status(res.code).send(res);
     }
 };
@@ -137,6 +151,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ConducesDesayunoController.prototype, "getData", null);
 __decorate([
+    (0, common_1.Get)('by-codigo'),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
+    __param(0, (0, common_1.Query)('codigo')),
+    __param(1, (0, common_1.Query)('deleted')),
+    __param(2, (0, common_1.Req)()),
+    __param(3, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ConducesDesayunoController.prototype, "findByCodigo", null);
+__decorate([
     (0, common_1.Get)('relacion'),
     (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
     __param(0, (0, common_1.Req)()),
@@ -148,6 +173,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, String, String, String]),
     __metadata("design:returntype", Promise)
 ], ConducesDesayunoController.prototype, "getRelacion", null);
+__decorate([
+    (0, common_1.Post)('update-raciones-actuales'),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ConducesDesayunoController.prototype, "updateRacionesActuales", null);
 exports.ConducesDesayunoController = ConducesDesayunoController = __decorate([
     (0, common_1.Controller)('conduces-desayuno'),
     __metadata("design:paramtypes", [conduces_desayuno_service_1.ConduceDesayunoService])

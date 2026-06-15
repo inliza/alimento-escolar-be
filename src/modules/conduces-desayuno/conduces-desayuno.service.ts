@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateConduceDto } from 'src/dtos/conduce-desayuno-create.dto';
 import { ArticuloDesayuno } from 'src/entities/articulos-desayuno.entity';
 import { ConduceDesayuno } from 'src/entities/conduces-desayuno.entity';
+import { Escuela } from 'src/entities/escuela.entity';
 import { ServiceResponse } from 'src/helpers/service-response';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, In } from 'typeorm';
 
 @Injectable()
 export class ConduceDesayunoService {
@@ -150,6 +151,94 @@ export class ConduceDesayunoService {
 
             await qr.commitTransaction();
             return new ServiceResponse(200, created);
+        } catch (err: any) {
+            await qr.rollbackTransaction();
+            return this.mapPgErrorToServiceResponse(err);
+        } finally {
+            await qr.release();
+        }
+    }
+
+    async updateConducesCantidadByEscuela(
+        escuelaId: number,
+        companyId: number,
+        conduces: Array<number | { id: number }>,
+    ): Promise<ServiceResponse<ConduceDesayuno[] | null>> {
+        if (!escuelaId || !companyId || !Array.isArray(conduces) || conduces.length === 0) {
+            return new ServiceResponse(400, null, 'escuelaId, companyId y lista de conduces son requeridos.');
+        }
+
+        // Normalizar ids
+        const ids = conduces
+            .map(c => (typeof c === 'number' ? c : (c && (c as any).id)))
+            .filter(Boolean) as number[];
+
+        const qr = this.dataSource.createQueryRunner();
+        await qr.connect();
+        await qr.startTransaction();
+
+        try {
+            // Buscar escuela y validar company
+            const escuelaRepo = this.dataSource.getRepository(Escuela);
+            const escuela = await escuelaRepo.findOne({ where: { id: escuelaId } });
+
+            if (!escuela) {
+                await qr.rollbackTransaction();
+                return new ServiceResponse(404, null, 'Escuela no encontrada');
+            }
+
+            // Si la escuela tiene company asociada y no coincide => 403
+            if (escuela.idCompany != null && Number(escuela.idCompany) !== Number(companyId)) {
+                await qr.rollbackTransaction();
+                return new ServiceResponse(403, null, 'La escuela no pertenece a la compañía proporcionada');
+            }
+
+            const racion = Number(escuela.racion ?? 0);
+
+            // Traer conduces a actualizar (asegurando escuela y company)
+            const items = await qr.manager.find(ConduceDesayuno, {
+                where: { id: In(ids), escuelaId: escuelaId, companyId: companyId },
+            });
+
+            if (!items.length) {
+                await qr.rollbackTransaction();
+                return new ServiceResponse(404, null, 'No se encontraron conduces para actualizar');
+            }
+
+            const updated: ConduceDesayuno[] = [];
+
+            const round2 = (v: number) => Math.round(v * 100) / 100;
+
+            for (const it of items) {
+                const cantidad = racion;
+                const precio = Number(it.precio ?? 0);
+                const subtotal = cantidad * precio;
+
+                let newItbis = Number(it.itbis ?? 0);
+                if (newItbis > 0) {
+                    newItbis = round2(subtotal * 0.18);
+                } else {
+                    newItbis = 0;
+                }
+
+                const total = round2(subtotal + newItbis);
+
+                it.cantidad = cantidad;
+                it.itbis = newItbis;
+                it.total = total;
+
+                await qr.manager.save(ConduceDesayuno, it);
+
+                const saved = await qr.manager.findOne(ConduceDesayuno, {
+                    where: { id: it.id },
+                    relations: { articulo: true, escuela: true, company: true },
+                });
+
+                if (saved) updated.push(saved);
+            }
+
+            await qr.commitTransaction();
+            return new ServiceResponse(200, updated);
         } catch (err: any) {
             await qr.rollbackTransaction();
             return this.mapPgErrorToServiceResponse(err);

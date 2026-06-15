@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const articulos_desayuno_entity_1 = require("../../entities/articulos-desayuno.entity");
 const conduces_desayuno_entity_1 = require("../../entities/conduces-desayuno.entity");
+const escuela_entity_1 = require("../../entities/escuela.entity");
 const service_response_1 = require("../../helpers/service-response");
 const typeorm_2 = require("typeorm");
 let ConduceDesayunoService = class ConduceDesayunoService {
@@ -139,6 +140,71 @@ let ConduceDesayunoService = class ConduceDesayunoService {
             await qr.release();
         }
     }
+    async updateConducesCantidadByEscuela(escuelaId, companyId, conduces) {
+        if (!escuelaId || !companyId || !Array.isArray(conduces) || conduces.length === 0) {
+            return new service_response_1.ServiceResponse(400, null, 'escuelaId, companyId y lista de conduces son requeridos.');
+        }
+        const ids = conduces
+            .map(c => (typeof c === 'number' ? c : (c && c.id)))
+            .filter(Boolean);
+        const qr = this.dataSource.createQueryRunner();
+        await qr.connect();
+        await qr.startTransaction();
+        try {
+            const escuelaRepo = this.dataSource.getRepository(escuela_entity_1.Escuela);
+            const escuela = await escuelaRepo.findOne({ where: { id: escuelaId } });
+            if (!escuela) {
+                await qr.rollbackTransaction();
+                return new service_response_1.ServiceResponse(404, null, 'Escuela no encontrada');
+            }
+            if (escuela.idCompany != null && Number(escuela.idCompany) !== Number(companyId)) {
+                await qr.rollbackTransaction();
+                return new service_response_1.ServiceResponse(403, null, 'La escuela no pertenece a la compañía proporcionada');
+            }
+            const racion = Number(escuela.racion ?? 0);
+            const items = await qr.manager.find(conduces_desayuno_entity_1.ConduceDesayuno, {
+                where: { id: (0, typeorm_2.In)(ids), escuelaId: escuelaId, companyId: companyId },
+            });
+            if (!items.length) {
+                await qr.rollbackTransaction();
+                return new service_response_1.ServiceResponse(404, null, 'No se encontraron conduces para actualizar');
+            }
+            const updated = [];
+            const round2 = (v) => Math.round(v * 100) / 100;
+            for (const it of items) {
+                const cantidad = racion;
+                const precio = Number(it.precio ?? 0);
+                const subtotal = cantidad * precio;
+                let newItbis = Number(it.itbis ?? 0);
+                if (newItbis > 0) {
+                    newItbis = round2(subtotal * 0.18);
+                }
+                else {
+                    newItbis = 0;
+                }
+                const total = round2(subtotal + newItbis);
+                it.cantidad = cantidad;
+                it.itbis = newItbis;
+                it.total = total;
+                await qr.manager.save(conduces_desayuno_entity_1.ConduceDesayuno, it);
+                const saved = await qr.manager.findOne(conduces_desayuno_entity_1.ConduceDesayuno, {
+                    where: { id: it.id },
+                    relations: { articulo: true, escuela: true, company: true },
+                });
+                if (saved)
+                    updated.push(saved);
+            }
+            await qr.commitTransaction();
+            return new service_response_1.ServiceResponse(200, updated);
+        }
+        catch (err) {
+            await qr.rollbackTransaction();
+            return this.mapPgErrorToServiceResponse(err);
+        }
+        finally {
+            await qr.release();
+        }
+    }
     async findByFechaRango(companyId, desde, hasta, escuelaId = 0) {
         try {
             if (!companyId || !desde) {
@@ -175,6 +241,19 @@ let ConduceDesayunoService = class ConduceDesayunoService {
         catch (error) {
             return new service_response_1.ServiceResponse(500, null, 'Error al filtrar conduces por fecha.', error);
         }
+    }
+    async findByCodigo(codigoConduce, companyId, deleted) {
+        const res = await this.conduceRepo
+            .createQueryBuilder('c')
+            .leftJoinAndSelect('c.escuela', 'escuela')
+            .leftJoinAndSelect('escuela.localidad', 'localidad')
+            .leftJoinAndSelect('escuela.distrito', 'distrito')
+            .leftJoinAndSelect('c.articulo', 'articulo')
+            .where('c.codigoConduce = :codigoConduce', { codigoConduce })
+            .andWhere('c.companyId = :companyId', { companyId })
+            .andWhere('c.deleted = :deleted', { deleted })
+            .getMany();
+        return new service_response_1.ServiceResponse(res.length > 0 ? 200 : 404, res);
     }
     async findByFechaRangoDeleted(companyId, desde, hasta, escuelaId = 0) {
         try {

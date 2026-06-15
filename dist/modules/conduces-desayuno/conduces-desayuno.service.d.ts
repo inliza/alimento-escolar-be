@@ -8,7 +8,11 @@ export declare class ConduceDesayunoService {
     constructor(conduceRepo: Repository<ConduceDesayuno>, dataSource: DataSource);
     getRelacionPivot(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<any[] | null>>;
     createBulk(dtos: CreateConduceDto[], companyId: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
+    updateConducesCantidadByEscuela(escuelaId: number, companyId: number, conduces: Array<number | {
+        id: number;
+    }>): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
     findByFechaRango(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
+    findByCodigo(codigoConduce: number, companyId: number, deleted: boolean): Promise<ServiceResponse<any | null>>;
     findByFechaRangoDeleted(companyId: number, desde: string, hasta?: string, escuelaId?: number): Promise<ServiceResponse<ConduceDesayuno[] | null>>;
     softDelete(id: number, companyId?: number): Promise<ServiceResponse<string | null>>;
     getUltimasFechasConTotales(companyId: number): Promise<ServiceResponse<{
