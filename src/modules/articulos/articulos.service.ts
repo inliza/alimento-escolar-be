@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ArticuloDesayuno } from "src/entities/articulos-desayuno.entity";
 import { ServiceResponse } from "src/helpers/service-response";
@@ -28,6 +28,25 @@ export class ArticulosService {
             return new ServiceResponse(404, null, `Article with ID ${id} not found`);
         }
         return new ServiceResponse(200, articulo);
+    }
+
+    async updatePrice(id: number, precio: number | string): Promise<ServiceResponse<ArticuloDesayuno | null>> {
+        const articulo = await this.articulosD.findOne({ where: { id } });
+
+        if (!articulo) {
+            return new ServiceResponse(404, null, `Article with ID ${id} not found`);
+        }
+
+        const precioNumerico = Number(precio);
+
+        if (Number.isNaN(precioNumerico)) {
+            return new ServiceResponse(400, null, 'The article price is invalid');
+        }
+
+        articulo.precio = precioNumerico.toFixed(2);
+        const updatedArticulo = await this.articulosD.save(articulo);
+
+        return new ServiceResponse(200, updatedArticulo, 'Article price updated successfully');
     }
 
     private async findOne(id: number): Promise<ArticuloDesayuno | null> {

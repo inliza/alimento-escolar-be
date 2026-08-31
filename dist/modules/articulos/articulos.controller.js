@@ -29,6 +29,10 @@ let ArticulosController = class ArticulosController {
         const res = await this.service.findById(id);
         return response.status(res.code).send(res);
     }
+    async updatePrice(id, body, response) {
+        const res = await this.service.updatePrice(id, body.precio);
+        return response.status(res.code).send(res);
+    }
 };
 exports.ArticulosController = ArticulosController;
 __decorate([
@@ -48,6 +52,16 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], ArticulosController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)('desayuno/:id'),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthMiddleware),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ArticulosController.prototype, "updatePrice", null);
 exports.ArticulosController = ArticulosController = __decorate([
     (0, common_1.Controller)('articulos'),
     __metadata("design:paramtypes", [articulos_service_1.ArticulosService])

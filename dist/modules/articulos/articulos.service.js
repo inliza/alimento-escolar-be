@@ -39,6 +39,19 @@ let ArticulosService = class ArticulosService {
         }
         return new service_response_1.ServiceResponse(200, articulo);
     }
+    async updatePrice(id, precio) {
+        const articulo = await this.articulosD.findOne({ where: { id } });
+        if (!articulo) {
+            return new service_response_1.ServiceResponse(404, null, `Article with ID ${id} not found`);
+        }
+        const precioNumerico = Number(precio);
+        if (Number.isNaN(precioNumerico)) {
+            return new service_response_1.ServiceResponse(400, null, 'The article price is invalid');
+        }
+        articulo.precio = precioNumerico.toFixed(2);
+        const updatedArticulo = await this.articulosD.save(articulo);
+        return new service_response_1.ServiceResponse(200, updatedArticulo, 'Article price updated successfully');
+    }
     async findOne(id) {
         const articulo = await this.articulosD.findOne({ where: { id } });
         if (!articulo) {

@@ -6,6 +6,7 @@ export declare class ArticulosService {
     constructor(articulosD: Repository<ArticuloDesayuno>);
     findAll(): Promise<ServiceResponse<ArticuloDesayuno[] | null>>;
     findById(id: number): Promise<ServiceResponse<ArticuloDesayuno | null>>;
+    updatePrice(id: number, precio: number | string): Promise<ServiceResponse<ArticuloDesayuno | null>>;
     private findOne;
     remove(id: number): Promise<ServiceResponse<string>>;
     create(articulo: ArticuloDesayuno): Promise<ArticuloDesayuno>;
